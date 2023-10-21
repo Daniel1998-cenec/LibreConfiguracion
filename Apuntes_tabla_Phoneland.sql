@@ -81,6 +81,12 @@ select * from clientes
     inner join fabricantes on productos.idfabricante = fabricantes.id;
     
 -- creando consultas
+/* 1 */
+SELECT 
+	clientes.id AS Cod_cli
+FROM clientes;
+
+/* 2 */
 set @iva:=0.21; -- Creando una variable que vamos a usar en esta consulta con valor 0.21;
 set @Desc:=0.10;
 
@@ -90,29 +96,82 @@ precio+(precio*@iva) as total,
 precio+(precio*@iva)*@desc as total
 from productos;
 
+
+/* 3 */
 select concat_ws(" ",clientes.nombre, clientes.provincia) 
 from clientes;
 
+/* 4 */
 select 
 lower(nombre)
 from clientes;
 
+
+/* 5 */
 select 
 substr(nombre, 1, length(nombre)) as Nombre_cliente
 from clientes;
 
+
+/* 6 */
 select ventas.idproductos
 from ventas; -- con esta consulta aparece repetido las ventas de productos
 
+
+/* 7 */
 select distinct ventas.idproductos
 from ventas; -- con esta consulta NO se repite las ventas de productos
 
+
+/* 8 */
 select * 
 from clientes 
-where nombre not like '_____'; -- '%a%' busca en todo lo que tiene la letra 'a';
+where nombre not like '_____'; -- '%a%' busca en todo la cantidad de caracteres;
+
+SELECT *
+FROM clientes 
+WHERE nombre not LIKE '%a%';
 
 select * from clientes where nombre is null;
 
-select count(*) from productos;
-select count(distinct productos.fabricante) 
-from productos
+/* 8 */
+SELECT 
+MAX(precio) AS max,
+MIN(precio) AS min,
+AVG(precio) AS medio
+FROM productos;
+
+SELECT 
+	COUNT(*),
+	COUNT(precio)
+ FROM productos;
+
+/* 9 */
+SELECT idfabricante,
+COUNT(distinct idfabricante) as n    
+FROM productos;
+
+/* 10 */
+SELECT c.id, V.fecha
+FROM clientes c
+INNER JOIN ventas v
+ON c.id = v.idclientes;
+
+/* 11 */
+SET @iva = 0.21;
+SELECT 
+    c.NOMBRE AS Cliente, c.CIUDAD AS Ciudad, SUBSTR(p.nombre, length(p.nombre)-10, LENGTH(p.nombre)) AS Producto,
+	p.PRECIO AS Precio, ROUND(p.precio + p.precio*@iva,0) AS Total, v.FECHA AS Fecha, v.idproductos AS Uds
+FROM clientes c
+INNER JOIN ventas v
+ON c.Id = v.idclientes
+INNER JOIN productos p
+ON p.id = v.idproductos;
+
+/* 12 */
+SELECT v.idclientes, c.NOMBRE
+FROM clientes c INNER JOIN ventas v
+ON c.Id = v.idclientes
+GROUP BY V.IdCLIENTES
+HAVING COUNT(*) >= 3;
+
