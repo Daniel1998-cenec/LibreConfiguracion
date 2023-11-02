@@ -175,3 +175,5 @@ ON c.Id = v.idclientes
 GROUP BY V.IdCLIENTES
 HAVING COUNT(*) >= 3;
 
+
+
