@@ -175,5 +175,82 @@ ON c.Id = v.idclientes
 GROUP BY V.IdCLIENTES
 HAVING COUNT(*) >= 3;
 
+/* primer ejercicio de delimeter */
+
+Delimiter $$
+drop procedure if exists CalculaPrecioIva2 $$
+create procedure CalculaPrecioIva2
+(in precio decimal(10,2), out total decimal(10,2))
+begin
+	declare iva decimal(10,2);
+    set iva :=0.21;
+    set total := precio + (precio*iva);
+end $$
+Delimiter ;
+
+call CalculaPrecioIva2 (100.0,@resultado);
+select @resultado as TotalConIva;
+
+
+
+/* Segundo ejercicio de delimeter */
+delimiter $$
+drop procedure if exists calcularFactura $$
+create procedure calcularFactura
+(in precioBase decimal(10,2), out precioConIVA decimal(10,2), out precioTotal decimal(10,2))
+begin
+	declare iva decimal(10,2);
+	set iva := 0.21;
+    set precioConIVA := precioBase + (precioBase * iva);
+	set precioTotal := precioBase + precioConIVA;
+end $$
+delimiter ;
+
+call calcularFactura(100.00, @precioConIVA, @precioTotal);
+select @precioConIVA;
+
+/* tercer ejercicio de delimeter*/
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS CalculaPrecioDescuentoIvaTotal $$
+CREATE PROCEDURE CalculaPrecioDescuentoIvaTotal
+(IN precioBase DECIMAL(10,2), OUT descuento DECIMAL(10,2), OUT precioDescuento DECIMAL(10,2), OUT iva DECIMAL(10,2), OUT total DECIMAL(10,2))
+BEGIN 
+    -- Definir el descuento (10%)
+    SET descuento := precioBase * 0.10;
+
+    -- Calcular el precio con descuento
+    SET precioDescuento := precioBase - descuento; -- Aquí corregí precio_descuento a precioDescuento
+    
+    -- Definir la tasa de IVA (21%)
+    SET iva := precioDescuento * 0.21;
+    
+    -- Calcular el total
+    SET total := precioDescuento + iva;
+END $$
+DELIMITER ;
+
+SET @precioBase = 1000; -- Establece el precio base
+CALL CalculaPrecioDescuentoIvaTotal(@precioBase, @descuento, @precioDescuento, @iva, @total); -- Llama al procedimiento y obtén todos los resultados
+SELECT @precioBase, @descuento, @precioDescuento, @iva, @total; -- Muestra todos los resultados
+
+
+/* ejercicio de delimeter de edades */
+/*
+Delimiter $$
+drop procedure if exists CalculaEdad $$
+create procedure CalculaEdad
+(in fechaNacimiento int, out edad int)
+begin 
+	declare actual int default 2023;
+    set edad = actual-fechaNacimiento;
+end $$
+delimiter ;
+
+call CalculaEdad(1977,@edad_actual);
+select @edad_actual;
+
+*/
+
 
 
