@@ -252,5 +252,76 @@ select @edad_actual;
 
 */
 
+-- 9-11-2023
+-- actividad 1
+DELIMITER $$
+
+drop procedure if exists CalculaMayoriaEdad $$
+create procedure CalculaMayoriaEdad(
+in fecha_nacimiento int,
+out edad int,
+out tipo varchar(20))
+begin 	
+	declare actual int default 2023;
+    set edad=actual- fecha_nacimiento;
+    if edad>=18 then
+		select concat(edad," ",'Mayor de edad') as mayorEdad;
+	else
+		select 'menor de edad';
+	end if;
+end $$
+DELIMITER ;
+
+DELIMITER $$
+
+call CalculaMayoriaEdad(1950,@edad,@tipo);
+
+/*-- actividad 2
+drop procedure if exists CalculaMayoriaEdad $$
+create procedure CalculaMayoriaEdad(
+in fecha_nacimiento int,
+out edad int,
+out tipo varchar(20))
+begin 	
+	declare actual int default 2023;
+    set edad=actual- fecha_nacimiento;
+    if edad>=18 then
+		select concat(edad," ",'Mayor de edad');
+	else
+		select 'menor de edad';
+	end if;
+    select 'jubilado';
+end $$
+DELIMITER ;
+
+call CalculaMayoriaEdad(1950,@edad,@tipo);*/
+
+-- actividad 3
+
+delimiter $$
+drop procedure if exists CalcularMayoriaEdad $$
+create procedure CalcularMayoriaEdad(
+in fecha_nacimiento int,
+out edad int,
+out tipo varchar(20))
+
+begin
+	declare actual int default 2023;
+    set edad=actual-fecha_nacimiento;
+    if edad>=18 and edad<=65 then
+		select concat("Edad: ",edad, ". ",'Mayor de edad') as Resultado;
+	elseif edad<10 then
+		select concat("Edad: ",edad, ". ",'Niño') as Resultado;
+	elseif edad>10 and edad<17 then
+		select concat("Edad: ",edad, ". ",'Adolescente') as Resultado;
+	else
+		select 'Jubilado' as Resultado;
+	end if;
+end $$
+delimiter ;
+
+call CalcularMayoriaEdad(1994,@edad,@tipo);
+
+
 
 
