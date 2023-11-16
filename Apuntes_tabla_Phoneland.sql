@@ -322,6 +322,92 @@ delimiter ;
 
 call CalcularMayoriaEdad(1994,@edad,@tipo);
 
+-- 16-11-2023 
+-- Funcion que devuelven en euros a las pesetas 
+
+Delimiter $$
+drop function if exists funcion1 $$
+create function funcion1 (p_pesetas Decimal(12,2))
+-- conversor de pesetas a euros
+	returns decimal(10,2)
+begin
+return(p_pesetas/166.386);
+end$$
+Delimiter ;
+
+select funcion1(precio) as rublos from productos;
+
+-- Funcion que devuelven en euros con el iva 
+
+DELIMITER $$
+DROP FUNCTION IF EXISTS calcular_iva $$
+CREATE FUNCTION calcular_iva (euros DECIMAL(12,2))
+	RETURNS DECIMAL(10,2) DETERMINISTIC
+BEGIN
+	RETURN (descuento(euros)*0.21);
+END $$
+DELIMITER ;
+
+-- Funcion que devuelven descuento
+
+DELIMITER $$
+DROP FUNCTION IF EXISTS descuento $$
+CREATE FUNCTION descuento (euros DECIMAL(12,2))
+	RETURNS DECIMAL(10,2) DETERMINISTIC
+BEGIN
+	RETURN euros-(euros*0.10);
+END $$
+DELIMITER ;
+
+SELECT precio, descuento(precio) AS Descuento, calcular_iva(precio) AS IVA FROM productos;
+
+-- ////////////////////////////////////////////////////
+
+delimiter $$
+	DROP FUNCTION if EXISTS funcionIva $$
+	CREATE FUNCTION funcionIva (euros decimal(12,2))
+	RETURNS DECIMAL (10,2) DETERMINISTIC
+	BEGIN
+		RETURN euros+euros*0.21 ;
+	END $$
+delimiter ;
+
+SELECT precio, funcionIva(precio) as precioConIva FROM productos;
+
+-- ///////////////////////////////////////////////////////
+
+delimiter $$
+	DROP FUNCTION if EXISTS funcionDescuento $$
+	CREATE FUNCTION funcionDescuento (euros decimal(12,2))
+	RETURNS DECIMAL (10,2) DETERMINISTIC
+	BEGIN
+		if euros > 200 then
+			RETURN euros-euros*0.10 ;
+        else
+			RETURN euros;
+        END IF;
+	END $$
+delimiter ;
+
+SELECT precio, funcionDescuento(precio)  as descuento , 
+funcionIva(funcionDescuento(precio)) as descuentoConIva from productos;
+
+-- ///////////////////////////////////////////////////////
+
+delimiter $$
+	DROP FUNCTION if EXISTS funcionTotal $$
+	CREATE FUNCTION funcionTotal(euros DECIMAL(12,2))
+	RETURNS DECIMAL(10,2) DETERMINISTIC
+BEGIN
+    RETURN funcionIva(funcionDescuento(euros));
+END $$
+
+DELIMITER ;
+
+SELECT precio, funcionTotal(precio) AS total FROM productos;
+
+
+
 
 
 
